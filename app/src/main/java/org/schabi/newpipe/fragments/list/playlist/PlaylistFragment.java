@@ -1,6 +1,5 @@
 package org.schabi.newpipe.fragments.list.playlist;
 
-import static org.schabi.newpipe.extractor.utils.Utils.isNullOrEmpty;
 import static org.schabi.newpipe.ktx.ViewUtils.animate;
 import static org.schabi.newpipe.ktx.ViewUtils.animateHideRecyclerViewAllowingScrolling;
 
@@ -136,7 +135,7 @@ public class PlaylistFragment extends BaseListInfoFragment<PlaylistInfo> {
     }
 
     @Override
-    protected void showStreamDialog(final StreamInfoItem item) {
+    protected void showInfoItemDialog(final StreamInfoItem item) {
         final Context context = getContext();
         final Activity activity = getActivity();
         if (context == null || context.getResources() == null || activity == null) {

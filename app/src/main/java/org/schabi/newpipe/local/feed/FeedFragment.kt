@@ -80,7 +80,6 @@ import org.schabi.newpipe.local.subscription.SubscriptionManager
 import org.schabi.newpipe.util.DeviceUtils
 import org.schabi.newpipe.util.Localization
 import org.schabi.newpipe.util.NavigationHelper
-import org.schabi.newpipe.util.StreamDialogDefaultEntry
 import org.schabi.newpipe.util.ThemeHelper.getGridSpanCountStreams
 import org.schabi.newpipe.util.ThemeHelper.shouldUseGridLayout
 import java.time.OffsetDateTime
@@ -353,7 +352,7 @@ class FeedFragment : BaseStateFragment<FeedState>() {
         feedBinding.loadingProgressBar.max = progressState.maxProgress
     }
 
-    private fun showStreamDialog(item: StreamInfoItem) {
+    private fun showInfoItemDialog(item: StreamInfoItem) {
         val context = context
         val activity: Activity? = getActivity()
         if (context == null || context.resources == null || activity == null) return
@@ -374,7 +373,7 @@ class FeedFragment : BaseStateFragment<FeedState>() {
 
         override fun onItemLongClick(item: Item<*>, view: View): Boolean {
             if (item is StreamItem && !isRefreshing) {
-                showStreamDialog(item.streamWithState.stream.toStreamInfoItem())
+                showInfoItemDialog(item.streamWithState.stream.toStreamInfoItem())
                 return true
             }
             return false

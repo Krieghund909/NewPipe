@@ -88,7 +88,7 @@ public final class InfoItemDialog {
         }
 
         /**
-         * <p>Create an instance of this Builder</p>
+         * <p>Create an instance of this Builder.</p>
          * @param activity
          * @param fragment
          * @param infoItem
