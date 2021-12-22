@@ -29,7 +29,6 @@ import org.schabi.newpipe.databinding.StatisticPlaylistControlBinding;
 import org.schabi.newpipe.error.ErrorInfo;
 import org.schabi.newpipe.error.UserAction;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
-import org.schabi.newpipe.extractor.stream.StreamType;
 import org.schabi.newpipe.info_list.InfoItemDialog;
 import org.schabi.newpipe.local.BaseLocalListFragment;
 import org.schabi.newpipe.player.playqueue.PlayQueue;
@@ -337,10 +336,7 @@ public class StatisticsPlaylistFragment
                 activity, this, infoItem);
 
         dialogBuilder.addEnqueueEntriesIfNeeded();
-        dialogBuilder.addEntry(StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND);
-        if (infoItem.getStreamType() != StreamType.AUDIO_STREAM) {
-            dialogBuilder.addEntry(StreamDialogDefaultEntry.START_HERE_ON_POPUP);
-        }
+        dialogBuilder.addStartHereEntries();
         dialogBuilder.addAllEntries(
                 StreamDialogDefaultEntry.DELETE,
                 StreamDialogDefaultEntry.APPEND_PLAYLIST,
@@ -349,7 +345,7 @@ public class StatisticsPlaylistFragment
         );
         dialogBuilder.addPlayWithKodiEntryIfNeeded();
         dialogBuilder.addMarkAsWatchedEntryIfNeeded(infoItem.getStreamType());
-        dialogBuilder.addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS);
+        dialogBuilder.addChannelDetailsEntryIfPossible();
 
 
         dialogBuilder.setAction(StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
@@ -358,7 +354,7 @@ public class StatisticsPlaylistFragment
         dialogBuilder.setAction(StreamDialogDefaultEntry.DELETE, (fragment, infoItemDuplicate) ->
                 deleteEntry(Math.max(itemListAdapter.getItemsList().indexOf(item), 0)));
 
-        dialogBuilder.build().show();
+        dialogBuilder.create().show();
     }
 
     private void deleteEntry(final int index) {

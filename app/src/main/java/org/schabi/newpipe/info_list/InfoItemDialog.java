@@ -1,5 +1,7 @@
 package org.schabi.newpipe.info_list;
 
+import static org.schabi.newpipe.extractor.utils.Utils.isNullOrEmpty;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.view.View;
@@ -102,29 +104,18 @@ public final class InfoItemDialog {
             }
         }
 
-        public void addEntriesForStreamType(@NonNull final StreamType type) {
-            if (type == StreamType.AUDIO_STREAM || type == StreamType.AUDIO_LIVE_STREAM) {
-                addAllEntries(
-                        StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
-                        StreamDialogDefaultEntry.APPEND_PLAYLIST,
-                        StreamDialogDefaultEntry.SHARE
-                );
-            } else {
-                addAllEntries(
-                        StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
-                        StreamDialogDefaultEntry.START_HERE_ON_POPUP,
-                        StreamDialogDefaultEntry.APPEND_PLAYLIST,
-                        StreamDialogDefaultEntry.SHARE
-                );
-            }
-        }
-
         public void setAction(@NonNull final StreamDialogDefaultEntry entry,
                               @NonNull final StreamDialogEntry.StreamDialogEntryAction action) {
             for (int i = 0; i < entries.size(); i++) {
                 if (entries.get(i).resource == entry.resource) {
                     entries.set(i, new StreamDialogEntry(entry.resource, action));
                 }
+            }
+        }
+
+        public void addChannelDetailsEntryIfPossible() {
+            if (!isNullOrEmpty(info.getUploaderUrl())) {
+                addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS);
             }
         }
 
@@ -135,6 +126,14 @@ public final class InfoItemDialog {
                 if (PlayerHolder.getInstance().getQueueSize() > 1) {
                     addEntry(StreamDialogDefaultEntry.ENQUEUE_NEXT);
                 }
+            }
+        }
+
+        public void addStartHereEntries() {
+            addEntry(StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND);
+            if (info.getStreamType() != StreamType.AUDIO_STREAM
+                    && info.getStreamType() != StreamType.AUDIO_LIVE_STREAM) {
+                addEntry(StreamDialogDefaultEntry.START_HERE_ON_POPUP);
             }
         }
 
@@ -160,7 +159,7 @@ public final class InfoItemDialog {
             }
         }
 
-        public InfoItemDialog build() {
+        public InfoItemDialog create() {
             return new InfoItemDialog(this.activity, this.fragment, this.info, this.entries);
         }
     }

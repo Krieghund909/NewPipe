@@ -147,19 +147,21 @@ public class PlaylistFragment extends BaseListInfoFragment<PlaylistInfo> {
                 activity, this, item);
 
         dialogBuilder.addEnqueueEntriesIfNeeded();
-        dialogBuilder.addEntriesForStreamType(item.getStreamType());
-        dialogBuilder.addEntry(StreamDialogDefaultEntry.OPEN_IN_BROWSER);
+        dialogBuilder.addStartHereEntries();
+        dialogBuilder.addAllEntries(
+                StreamDialogDefaultEntry.APPEND_PLAYLIST,
+                StreamDialogDefaultEntry.SHARE,
+                StreamDialogDefaultEntry.OPEN_IN_BROWSER
+        );
         dialogBuilder.addPlayWithKodiEntryIfNeeded();
         dialogBuilder.addMarkAsWatchedEntryIfNeeded(item.getStreamType());
-        if (!isNullOrEmpty(item.getUploaderUrl())) {
-            dialogBuilder.addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS);
-        }
+        dialogBuilder.addChannelDetailsEntryIfPossible();
 
         dialogBuilder.setAction(StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
                 (fragment, infoItem) -> NavigationHelper.playOnBackgroundPlayer(
                         context, getPlayQueueStartingAt(infoItem), true));
 
-        dialogBuilder.build().show();
+        dialogBuilder.create().show();
 
     }
 

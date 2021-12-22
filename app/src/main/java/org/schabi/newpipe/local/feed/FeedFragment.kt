@@ -68,7 +68,6 @@ import org.schabi.newpipe.error.UserAction
 import org.schabi.newpipe.extractor.exceptions.AccountTerminatedException
 import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
-import org.schabi.newpipe.extractor.stream.StreamType
 import org.schabi.newpipe.extractor.utils.Utils.isNullOrEmpty
 import org.schabi.newpipe.fragments.BaseStateFragment
 import org.schabi.newpipe.info_list.InfoItemDialog
@@ -362,11 +361,7 @@ class FeedFragment : BaseStateFragment<FeedState>() {
         val dialogBuilder = InfoItemDialog.Builder(activity, this, item)
 
         dialogBuilder.addEnqueueEntriesIfNeeded()
-
-        dialogBuilder.addEntry(StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND)
-        if (item.streamType != StreamType.AUDIO_STREAM) {
-            dialogBuilder.addEntry(StreamDialogDefaultEntry.START_HERE_ON_POPUP)
-        }
+        dialogBuilder.addStartHereEntries()
         dialogBuilder.addAllEntries(
             StreamDialogDefaultEntry.APPEND_PLAYLIST,
             StreamDialogDefaultEntry.SHARE,
@@ -374,9 +369,9 @@ class FeedFragment : BaseStateFragment<FeedState>() {
         )
         dialogBuilder.addPlayWithKodiEntryIfNeeded()
         dialogBuilder.addMarkAsWatchedEntryIfNeeded(item.streamType)
-        dialogBuilder.addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS)
+        dialogBuilder.addChannelDetailsEntryIfPossible()
 
-        dialogBuilder.build().show()
+        dialogBuilder.create().show()
     }
 
     private val listenerStreamItem = object : OnItemClickListener, OnItemLongClickListener {

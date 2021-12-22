@@ -751,7 +751,7 @@ public class LocalPlaylistFragment extends BaseLocalListFragment<List<PlaylistSt
                 activity, this, infoItem);
 
         dialogBuilder.addEnqueueEntriesIfNeeded();
-        dialogBuilder.addEntry(StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND);
+        dialogBuilder.addStartHereEntries();
         dialogBuilder.addAllEntries(
                 StreamDialogDefaultEntry.SET_AS_PLAYLIST_THUMBNAIL,
                 StreamDialogDefaultEntry.DELETE,
@@ -760,9 +760,8 @@ public class LocalPlaylistFragment extends BaseLocalListFragment<List<PlaylistSt
                 StreamDialogDefaultEntry.OPEN_IN_BROWSER
         );
         dialogBuilder.addPlayWithKodiEntryIfNeeded();
-
         dialogBuilder.addMarkAsWatchedEntryIfNeeded(infoItem.getStreamType());
-        dialogBuilder.addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS);
+        dialogBuilder.addChannelDetailsEntryIfPossible();
 
         // set custom actions
         dialogBuilder.setAction(StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
@@ -774,7 +773,7 @@ public class LocalPlaylistFragment extends BaseLocalListFragment<List<PlaylistSt
         dialogBuilder.setAction(StreamDialogDefaultEntry.DELETE,
                 (fragment, infoItemDuplicate) -> deleteItem(item));
 
-        dialogBuilder.build().show();
+        dialogBuilder.create().show();
     }
 
     private void setInitialData(final long pid, final String title) {
