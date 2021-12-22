@@ -31,9 +31,9 @@ public final class InfoItemDialog {
     private final AlertDialog dialog;
 
     private InfoItemDialog(@NonNull final Activity activity,
-                          @NonNull final Fragment fragment,
-                          @NonNull final StreamInfoItem info,
-                          @NonNull final List<StreamDialogEntry> entries) {
+                           @NonNull final Fragment fragment,
+                           @NonNull final StreamInfoItem info,
+                           @NonNull final List<StreamDialogEntry> entries) {
 
         final View bannerView = View.inflate(activity, R.layout.dialog_title, null);
         bannerView.setSelected(true);
@@ -72,7 +72,6 @@ public final class InfoItemDialog {
      * and {@link #addAllEntries(StreamDialogDefaultEntry...)} to add options to the dialog.
      * <br>
      * Custom actions for entries can be set using
-     * {@link #addEntry(StreamDialogDefaultEntry, StreamDialogEntry.StreamDialogEntryAction)} and
      * {@link #setAction(StreamDialogDefaultEntry, StreamDialogEntry.StreamDialogEntryAction)}.
      */
     public static class Builder {
@@ -91,11 +90,6 @@ public final class InfoItemDialog {
 
         public void addEntry(@NonNull final StreamDialogDefaultEntry entry) {
             entries.add(entry.toStreamDialogEntry());
-        }
-
-        public void addEntry(@NonNull final StreamDialogDefaultEntry entry,
-                             @NonNull final StreamDialogEntry.StreamDialogEntryAction action) {
-            entries.add(new StreamDialogEntry(entry.resource, action));
         }
 
         public void addAllEntries(@NonNull final StreamDialogDefaultEntry... newEntries) {
@@ -159,6 +153,10 @@ public final class InfoItemDialog {
             }
         }
 
+        /**
+         * Creates the {@link InfoItemDialog}.
+         * @return a new instance of {@link InfoItemDialog}
+         */
         public InfoItemDialog create() {
             return new InfoItemDialog(this.activity, this.fragment, this.info, this.entries);
         }

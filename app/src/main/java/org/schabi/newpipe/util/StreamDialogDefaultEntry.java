@@ -82,7 +82,7 @@ public enum StreamDialogDefaultEntry {
     DELETE(R.string.delete, (fragment, item) -> {
     }), // has to be set manually
 
-    APPEND_PLAYLIST(R.string.add_to_playlist, (fragment, item) -> {
+    APPEND_PLAYLIST(R.string.add_to_playlist, (fragment, item) ->
         PlaylistDialog.createCorrespondingDialog(
                 fragment.getContext(),
                 Collections.singletonList(new StreamEntity(item)),
@@ -92,8 +92,8 @@ public enum StreamDialogDefaultEntry {
                                 + (dialog instanceof PlaylistAppendDialog ? "append" : "create")
                                 + "_playlist"
                 )
-        );
-    }),
+        )
+    ),
 
     PLAY_WITH_KODI(R.string.play_with_kodi_title, (fragment, item) -> {
         final Uri videoUrl = Uri.parse(item.getUrl());
