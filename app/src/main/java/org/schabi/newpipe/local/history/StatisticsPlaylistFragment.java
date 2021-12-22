@@ -39,7 +39,6 @@ import org.schabi.newpipe.settings.HistorySettingsFragment;
 import org.schabi.newpipe.util.NavigationHelper;
 import org.schabi.newpipe.util.OnClickGesture;
 import org.schabi.newpipe.util.StreamDialogDefaultEntry;
-import org.schabi.newpipe.util.StreamDialogEntry;
 import org.schabi.newpipe.util.external_communication.KoreUtils;
 
 import java.util.ArrayList;
@@ -339,13 +338,7 @@ public class StatisticsPlaylistFragment
         final InfoItemDialog.Builder dialogBuilder = new InfoItemDialog.Builder(
                 activity, this, infoItem);
 
-        if (PlayerHolder.getInstance().isPlayerOpen()) {
-            dialogBuilder.addEntry(StreamDialogDefaultEntry.ENQUEUE);
-
-            if (PlayerHolder.getInstance().getQueueSize() > 1) {
-                dialogBuilder.addEntry(StreamDialogDefaultEntry.ENQUEUE_NEXT);
-            }
-        }
+        dialogBuilder.addEnqueueEntriesIfNeeded();
 
         if (infoItem.getStreamType() == StreamType.AUDIO_STREAM) {
             dialogBuilder.addAllEntries(
@@ -364,17 +357,8 @@ public class StatisticsPlaylistFragment
             );
         }
         dialogBuilder.addEntry(StreamDialogDefaultEntry.OPEN_IN_BROWSER);
-        if (KoreUtils.shouldShowPlayWithKodi(context, infoItem.getServiceId())) {
-            dialogBuilder.addEntry(StreamDialogDefaultEntry.PLAY_WITH_KODI);
-        }
-
-        // show "mark as watched" only when watch history is enabled
-        if (StreamDialogEntry.shouldAddMarkAsWatched(
-                item.getStreamEntity().getStreamType(),
-                context
-        )) {
-            dialogBuilder.addEntry(StreamDialogDefaultEntry.MARK_AS_WATCHED);
-        }
+        dialogBuilder.addPlayWithKodiEntryIfNeeded();
+        dialogBuilder.addMarkAsWatchedEntryIfNeeded(infoItem.getStreamType());
         dialogBuilder.addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS);
 
 

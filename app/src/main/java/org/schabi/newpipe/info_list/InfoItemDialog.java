@@ -8,11 +8,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
+import org.schabi.newpipe.extractor.stream.StreamType;
+import org.schabi.newpipe.player.helper.PlayerHolder;
 import org.schabi.newpipe.util.StreamDialogDefaultEntry;
 import org.schabi.newpipe.util.StreamDialogEntry;
+import org.schabi.newpipe.util.external_communication.KoreUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,12 +102,61 @@ public final class InfoItemDialog {
             }
         }
 
+        public void addEntriesForStreamType(@NonNull final StreamType type) {
+            if (type == StreamType.AUDIO_STREAM || type == StreamType.AUDIO_LIVE_STREAM) {
+                addAllEntries(
+                        StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
+                        StreamDialogDefaultEntry.APPEND_PLAYLIST,
+                        StreamDialogDefaultEntry.SHARE
+                );
+            } else {
+                addAllEntries(
+                        StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
+                        StreamDialogDefaultEntry.START_HERE_ON_POPUP,
+                        StreamDialogDefaultEntry.APPEND_PLAYLIST,
+                        StreamDialogDefaultEntry.SHARE
+                );
+            }
+        }
+
         public void setAction(@NonNull final StreamDialogDefaultEntry entry,
                               @NonNull final StreamDialogEntry.StreamDialogEntryAction action) {
             for (int i = 0; i < entries.size(); i++) {
                 if (entries.get(i).resource == entry.resource) {
                     entries.set(i, new StreamDialogEntry(entry.resource, action));
                 }
+            }
+        }
+
+        public void addEnqueueEntriesIfNeeded() {
+            if (PlayerHolder.getInstance().isPlayerOpen()) {
+                addEntry(StreamDialogDefaultEntry.ENQUEUE);
+
+                if (PlayerHolder.getInstance().getQueueSize() > 1) {
+                    addEntry(StreamDialogDefaultEntry.ENQUEUE_NEXT);
+                }
+            }
+        }
+
+        /**
+         * Adds {@link StreamDialogDefaultEntry.MARK_AS_WATCHED} if the watch history is enabled
+         * and the stream is not a livestream.
+         * @param streamType the item's stream type
+         */
+        public void addMarkAsWatchedEntryIfNeeded(final StreamType streamType) {
+            final boolean isWatchHistoryEnabled = PreferenceManager
+                    .getDefaultSharedPreferences(activity)
+                    .getBoolean(activity.getString(R.string.enable_watch_history_key), false);
+            if (streamType != StreamType.AUDIO_LIVE_STREAM
+                    && streamType != StreamType.LIVE_STREAM
+                    && isWatchHistoryEnabled) {
+                addEntry(StreamDialogDefaultEntry.MARK_AS_WATCHED);
+            }
+        }
+
+        public void addPlayWithKodiEntryIfNeeded() {
+            if (KoreUtils.shouldShowPlayWithKodi(activity, info.getServiceId())) {
+                addEntry(StreamDialogDefaultEntry.PLAY_WITH_KODI);
             }
         }
 

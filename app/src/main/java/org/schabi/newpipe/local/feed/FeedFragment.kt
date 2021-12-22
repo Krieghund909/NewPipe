@@ -83,7 +83,6 @@ import org.schabi.newpipe.util.DeviceUtils
 import org.schabi.newpipe.util.Localization
 import org.schabi.newpipe.util.NavigationHelper
 import org.schabi.newpipe.util.StreamDialogDefaultEntry
-import org.schabi.newpipe.util.StreamDialogEntry
 import org.schabi.newpipe.util.ThemeHelper.getGridSpanCountStreams
 import org.schabi.newpipe.util.ThemeHelper.shouldUseGridLayout
 import java.time.OffsetDateTime
@@ -363,13 +362,7 @@ class FeedFragment : BaseStateFragment<FeedState>() {
 
         val dialogBuilder = InfoItemDialog.Builder(activity, this, item)
 
-        if (PlayerHolder.getInstance().isPlayerOpen) {
-            dialogBuilder.addEntry(StreamDialogDefaultEntry.ENQUEUE)
-
-            if (PlayerHolder.getInstance().queueSize > 1) {
-                dialogBuilder.addEntry(StreamDialogDefaultEntry.ENQUEUE_NEXT)
-            }
-        }
+        dialogBuilder.addEnqueueEntriesIfNeeded()
 
         if (item.streamType == StreamType.AUDIO_STREAM) {
             dialogBuilder.addAllEntries(
@@ -388,10 +381,8 @@ class FeedFragment : BaseStateFragment<FeedState>() {
             )
         }
 
-        // show "mark as watched" only when watch history is enabled
-        if (StreamDialogEntry.shouldAddMarkAsWatched(item.streamType, context)) {
-            dialogBuilder.addEntry(StreamDialogDefaultEntry.MARK_AS_WATCHED)
-        }
+        dialogBuilder.addPlayWithKodiEntryIfNeeded()
+        dialogBuilder.addMarkAsWatchedEntryIfNeeded(item.streamType)
         dialogBuilder.addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS)
 
         dialogBuilder.build().show()
