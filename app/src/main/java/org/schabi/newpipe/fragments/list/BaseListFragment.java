@@ -349,16 +349,8 @@ public abstract class BaseListFragment<I, N> extends BaseStateFragment<I>
         final InfoItemDialog.Builder dialogBuilder = new InfoItemDialog.Builder(
                 activity, this, item);
 
-        dialogBuilder.addEnqueueEntriesIfNeeded();
-        dialogBuilder.addStartHereEntries();
-        dialogBuilder.addAllEntries(
-                StreamDialogDefaultEntry.APPEND_PLAYLIST,
-                StreamDialogDefaultEntry.SHARE,
-                StreamDialogDefaultEntry.OPEN_IN_BROWSER
-        );
-        dialogBuilder.addPlayWithKodiEntryIfNeeded();
-        dialogBuilder.addMarkAsWatchedEntryIfNeeded(item.getStreamType());
-        dialogBuilder.addChannelDetailsEntryIfPossible();
+        dialogBuilder.addDefaultEntriesAtBeginning();
+        dialogBuilder.addDefaultEntriesAtEnd();
 
         dialogBuilder.create().show();
     }

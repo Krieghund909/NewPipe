@@ -360,16 +360,8 @@ class FeedFragment : BaseStateFragment<FeedState>() {
 
         val dialogBuilder = InfoItemDialog.Builder(activity, this, item)
 
-        dialogBuilder.addEnqueueEntriesIfNeeded()
-        dialogBuilder.addStartHereEntries()
-        dialogBuilder.addAllEntries(
-            StreamDialogDefaultEntry.APPEND_PLAYLIST,
-            StreamDialogDefaultEntry.SHARE,
-            StreamDialogDefaultEntry.OPEN_IN_BROWSER
-        )
-        dialogBuilder.addPlayWithKodiEntryIfNeeded()
-        dialogBuilder.addMarkAsWatchedEntryIfNeeded(item.streamType)
-        dialogBuilder.addChannelDetailsEntryIfPossible()
+        dialogBuilder.addDefaultEntriesAtBeginning()
+        dialogBuilder.addDefaultEntriesAtEnd()
 
         dialogBuilder.create().show()
     }
