@@ -1,5 +1,9 @@
 package org.schabi.newpipe.fragments.list.playlist;
 
+import static org.schabi.newpipe.extractor.utils.Utils.isNullOrEmpty;
+import static org.schabi.newpipe.ktx.ViewUtils.animate;
+import static org.schabi.newpipe.ktx.ViewUtils.animateHideRecyclerViewAllowingScrolling;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -42,15 +46,15 @@ import org.schabi.newpipe.player.helper.PlayerHolder;
 import org.schabi.newpipe.player.playqueue.PlayQueue;
 import org.schabi.newpipe.player.playqueue.PlaylistPlayQueue;
 import org.schabi.newpipe.util.ExtractorHelper;
-import org.schabi.newpipe.util.PicassoHelper;
-import org.schabi.newpipe.util.external_communication.KoreUtils;
 import org.schabi.newpipe.util.Localization;
 import org.schabi.newpipe.util.NavigationHelper;
-import org.schabi.newpipe.util.external_communication.ShareUtils;
+import org.schabi.newpipe.util.PicassoHelper;
+import org.schabi.newpipe.util.StreamDialogDefaultEntry;
 import org.schabi.newpipe.util.StreamDialogEntry;
+import org.schabi.newpipe.util.external_communication.KoreUtils;
+import org.schabi.newpipe.util.external_communication.ShareUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -59,10 +63,6 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
-
-import static org.schabi.newpipe.extractor.utils.Utils.isNullOrEmpty;
-import static org.schabi.newpipe.ktx.ViewUtils.animate;
-import static org.schabi.newpipe.ktx.ViewUtils.animateHideRecyclerViewAllowingScrolling;
 
 public class PlaylistFragment extends BaseListInfoFragment<PlaylistInfo> {
 
@@ -147,53 +147,53 @@ public class PlaylistFragment extends BaseListInfoFragment<PlaylistInfo> {
             return;
         }
 
-        final ArrayList<StreamDialogEntry> entries = new ArrayList<>();
+        final InfoItemDialog.Builder dialogBuilder = new InfoItemDialog.Builder(
+                activity, this, item);
 
         if (PlayerHolder.getInstance().isPlayerOpen()) {
-            entries.add(StreamDialogEntry.enqueue);
+            dialogBuilder.addEntry(StreamDialogDefaultEntry.ENQUEUE);
 
             if (PlayerHolder.getInstance().getQueueSize() > 1) {
-                entries.add(StreamDialogEntry.enqueue_next);
+                dialogBuilder.addEntry(StreamDialogDefaultEntry.ENQUEUE_NEXT);
             }
         }
 
-        if (item.getStreamType() == StreamType.AUDIO_STREAM) {
-            entries.addAll(Arrays.asList(
-                    StreamDialogEntry.start_here_on_background,
-                    StreamDialogEntry.append_playlist,
-                    StreamDialogEntry.share
-            ));
+        if (item.getStreamType() == StreamType.AUDIO_STREAM
+                || item.getStreamType() == StreamType.AUDIO_LIVE_STREAM) {
+            dialogBuilder.addAllEntries(
+                StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
+                StreamDialogDefaultEntry.APPEND_PLAYLIST,
+                StreamDialogDefaultEntry.SHARE
+            );
         } else  {
-            entries.addAll(Arrays.asList(
-                    StreamDialogEntry.start_here_on_background,
-                    StreamDialogEntry.start_here_on_popup,
-                    StreamDialogEntry.append_playlist,
-                    StreamDialogEntry.share
-            ));
+            dialogBuilder.addAllEntries(
+                StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
+                StreamDialogDefaultEntry.START_HERE_ON_POPUP,
+                StreamDialogDefaultEntry.APPEND_PLAYLIST,
+                StreamDialogDefaultEntry.SHARE
+            );
         }
-        entries.add(StreamDialogEntry.open_in_browser);
+        dialogBuilder.addEntry(StreamDialogDefaultEntry.OPEN_IN_BROWSER);
         if (KoreUtils.shouldShowPlayWithKodi(context, item.getServiceId())) {
-            entries.add(StreamDialogEntry.play_with_kodi);
+            dialogBuilder.addEntry(StreamDialogDefaultEntry.PLAY_WITH_KODI);
         }
 
         // show "mark as watched" only when watch history is enabled
         if (StreamDialogEntry.shouldAddMarkAsWatched(item.getStreamType(), context)) {
-            entries.add(
-                    StreamDialogEntry.mark_as_watched
+            dialogBuilder.addEntry(
+                    StreamDialogDefaultEntry.MARK_AS_WATCHED
             );
         }
         if (!isNullOrEmpty(item.getUploaderUrl())) {
-            entries.add(StreamDialogEntry.show_channel_details);
+            dialogBuilder.addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS);
         }
 
-        StreamDialogEntry.setEnabledEntries(entries);
+        dialogBuilder.setAction(StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
+                (fragment, infoItem) -> NavigationHelper.playOnBackgroundPlayer(
+                        context, getPlayQueueStartingAt(infoItem), true));
 
-        StreamDialogEntry.start_here_on_background.setCustomAction((fragment, infoItem) ->
-                NavigationHelper.playOnBackgroundPlayer(context,
-                        getPlayQueueStartingAt(infoItem), true));
+        dialogBuilder.build().show();
 
-        new InfoItemDialog(activity, item, StreamDialogEntry.getCommands(context),
-                (dialog, which) -> StreamDialogEntry.clickOn(which, this, item)).show();
     }
 
     @Override

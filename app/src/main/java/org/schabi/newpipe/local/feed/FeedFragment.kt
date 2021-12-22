@@ -82,11 +82,11 @@ import org.schabi.newpipe.player.helper.PlayerHolder
 import org.schabi.newpipe.util.DeviceUtils
 import org.schabi.newpipe.util.Localization
 import org.schabi.newpipe.util.NavigationHelper
+import org.schabi.newpipe.util.StreamDialogDefaultEntry
 import org.schabi.newpipe.util.StreamDialogEntry
 import org.schabi.newpipe.util.ThemeHelper.getGridSpanCountStreams
 import org.schabi.newpipe.util.ThemeHelper.shouldUseGridLayout
 import java.time.OffsetDateTime
-import java.util.ArrayList
 import java.util.function.Consumer
 
 class FeedFragment : BaseStateFragment<FeedState>() {
@@ -271,7 +271,7 @@ class FeedFragment : BaseStateFragment<FeedState>() {
 
     override fun onDestroyView() {
         // Ensure that all animations are canceled
-        feedBinding.newItemsLoadedButton?.clearAnimation()
+        feedBinding.newItemsLoadedButton.clearAnimation()
 
         feedBinding.itemsList.adapter = null
         _feedBinding = null
@@ -361,48 +361,40 @@ class FeedFragment : BaseStateFragment<FeedState>() {
         val activity: Activity? = getActivity()
         if (context == null || context.resources == null || activity == null) return
 
-        val entries = ArrayList<StreamDialogEntry>()
+        val dialogBuilder = InfoItemDialog.Builder(activity, this, item)
+
         if (PlayerHolder.getInstance().isPlayerOpen) {
-            entries.add(StreamDialogEntry.enqueue)
+            dialogBuilder.addEntry(StreamDialogDefaultEntry.ENQUEUE)
 
             if (PlayerHolder.getInstance().queueSize > 1) {
-                entries.add(StreamDialogEntry.enqueue_next)
+                dialogBuilder.addEntry(StreamDialogDefaultEntry.ENQUEUE_NEXT)
             }
         }
 
         if (item.streamType == StreamType.AUDIO_STREAM) {
-            entries.addAll(
-                listOf(
-                    StreamDialogEntry.start_here_on_background,
-                    StreamDialogEntry.append_playlist,
-                    StreamDialogEntry.share,
-                    StreamDialogEntry.open_in_browser
-                )
+            dialogBuilder.addAllEntries(
+                StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
+                StreamDialogDefaultEntry.APPEND_PLAYLIST,
+                StreamDialogDefaultEntry.SHARE,
+                StreamDialogDefaultEntry.OPEN_IN_BROWSER
             )
         } else {
-            entries.addAll(
-                listOf(
-                    StreamDialogEntry.start_here_on_background,
-                    StreamDialogEntry.start_here_on_popup,
-                    StreamDialogEntry.append_playlist,
-                    StreamDialogEntry.share,
-                    StreamDialogEntry.open_in_browser
-                )
+            dialogBuilder.addAllEntries(
+                StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
+                StreamDialogDefaultEntry.START_HERE_ON_POPUP,
+                StreamDialogDefaultEntry.APPEND_PLAYLIST,
+                StreamDialogDefaultEntry.SHARE,
+                StreamDialogDefaultEntry.OPEN_IN_BROWSER
             )
         }
 
         // show "mark as watched" only when watch history is enabled
         if (StreamDialogEntry.shouldAddMarkAsWatched(item.streamType, context)) {
-            entries.add(
-                StreamDialogEntry.mark_as_watched
-            )
+            dialogBuilder.addEntry(StreamDialogDefaultEntry.MARK_AS_WATCHED)
         }
-        entries.add(StreamDialogEntry.show_channel_details)
+        dialogBuilder.addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS)
 
-        StreamDialogEntry.setEnabledEntries(entries)
-        InfoItemDialog(activity, item, StreamDialogEntry.getCommands(context)) { _, which ->
-            StreamDialogEntry.clickOn(which, this, item)
-        }.show()
+        dialogBuilder.build().show()
     }
 
     private val listenerStreamItem = object : OnItemClickListener, OnItemLongClickListener {
