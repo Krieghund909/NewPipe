@@ -78,7 +78,6 @@ import org.schabi.newpipe.ktx.slideUp
 import org.schabi.newpipe.local.feed.item.StreamItem
 import org.schabi.newpipe.local.feed.service.FeedLoadService
 import org.schabi.newpipe.local.subscription.SubscriptionManager
-import org.schabi.newpipe.player.helper.PlayerHolder
 import org.schabi.newpipe.util.DeviceUtils
 import org.schabi.newpipe.util.Localization
 import org.schabi.newpipe.util.NavigationHelper
@@ -364,23 +363,15 @@ class FeedFragment : BaseStateFragment<FeedState>() {
 
         dialogBuilder.addEnqueueEntriesIfNeeded()
 
-        if (item.streamType == StreamType.AUDIO_STREAM) {
-            dialogBuilder.addAllEntries(
-                StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
-                StreamDialogDefaultEntry.APPEND_PLAYLIST,
-                StreamDialogDefaultEntry.SHARE,
-                StreamDialogDefaultEntry.OPEN_IN_BROWSER
-            )
-        } else {
-            dialogBuilder.addAllEntries(
-                StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
-                StreamDialogDefaultEntry.START_HERE_ON_POPUP,
-                StreamDialogDefaultEntry.APPEND_PLAYLIST,
-                StreamDialogDefaultEntry.SHARE,
-                StreamDialogDefaultEntry.OPEN_IN_BROWSER
-            )
+        dialogBuilder.addEntry(StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND)
+        if (item.streamType != StreamType.AUDIO_STREAM) {
+            dialogBuilder.addEntry(StreamDialogDefaultEntry.START_HERE_ON_POPUP)
         }
-
+        dialogBuilder.addAllEntries(
+            StreamDialogDefaultEntry.APPEND_PLAYLIST,
+            StreamDialogDefaultEntry.SHARE,
+            StreamDialogDefaultEntry.OPEN_IN_BROWSER
+        )
         dialogBuilder.addPlayWithKodiEntryIfNeeded()
         dialogBuilder.addMarkAsWatchedEntryIfNeeded(item.streamType)
         dialogBuilder.addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS)

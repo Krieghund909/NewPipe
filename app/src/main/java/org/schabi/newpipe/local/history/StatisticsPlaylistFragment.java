@@ -32,14 +32,12 @@ import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.stream.StreamType;
 import org.schabi.newpipe.info_list.InfoItemDialog;
 import org.schabi.newpipe.local.BaseLocalListFragment;
-import org.schabi.newpipe.player.helper.PlayerHolder;
 import org.schabi.newpipe.player.playqueue.PlayQueue;
 import org.schabi.newpipe.player.playqueue.SinglePlayQueue;
 import org.schabi.newpipe.settings.HistorySettingsFragment;
 import org.schabi.newpipe.util.NavigationHelper;
 import org.schabi.newpipe.util.OnClickGesture;
 import org.schabi.newpipe.util.StreamDialogDefaultEntry;
-import org.schabi.newpipe.util.external_communication.KoreUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -339,24 +337,16 @@ public class StatisticsPlaylistFragment
                 activity, this, infoItem);
 
         dialogBuilder.addEnqueueEntriesIfNeeded();
-
-        if (infoItem.getStreamType() == StreamType.AUDIO_STREAM) {
-            dialogBuilder.addAllEntries(
-                StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
-                StreamDialogDefaultEntry.DELETE,
-                StreamDialogDefaultEntry.APPEND_PLAYLIST,
-                StreamDialogDefaultEntry.SHARE
-            );
-        } else  {
-            dialogBuilder.addAllEntries(
-                StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND,
-                StreamDialogDefaultEntry.START_HERE_ON_POPUP,
-                StreamDialogDefaultEntry.DELETE,
-                StreamDialogDefaultEntry.APPEND_PLAYLIST,
-                StreamDialogDefaultEntry.SHARE
-            );
+        dialogBuilder.addEntry(StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND);
+        if (infoItem.getStreamType() != StreamType.AUDIO_STREAM) {
+            dialogBuilder.addEntry(StreamDialogDefaultEntry.START_HERE_ON_POPUP);
         }
-        dialogBuilder.addEntry(StreamDialogDefaultEntry.OPEN_IN_BROWSER);
+        dialogBuilder.addAllEntries(
+                StreamDialogDefaultEntry.DELETE,
+                StreamDialogDefaultEntry.APPEND_PLAYLIST,
+                StreamDialogDefaultEntry.SHARE,
+                StreamDialogDefaultEntry.OPEN_IN_BROWSER
+        );
         dialogBuilder.addPlayWithKodiEntryIfNeeded();
         dialogBuilder.addMarkAsWatchedEntryIfNeeded(infoItem.getStreamType());
         dialogBuilder.addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS);

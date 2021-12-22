@@ -35,12 +35,10 @@ import org.schabi.newpipe.fragments.BaseStateFragment;
 import org.schabi.newpipe.fragments.OnScrollBelowItemsListener;
 import org.schabi.newpipe.info_list.InfoItemDialog;
 import org.schabi.newpipe.info_list.InfoListAdapter;
-import org.schabi.newpipe.player.helper.PlayerHolder;
 import org.schabi.newpipe.util.NavigationHelper;
 import org.schabi.newpipe.util.OnClickGesture;
 import org.schabi.newpipe.util.StateSaver;
 import org.schabi.newpipe.util.StreamDialogDefaultEntry;
-import org.schabi.newpipe.util.external_communication.KoreUtils;
 import org.schabi.newpipe.views.SuperScrollLayoutManager;
 
 import java.util.List;
@@ -352,13 +350,9 @@ public abstract class BaseListFragment<I, N> extends BaseStateFragment<I>
                 activity, this, item);
 
         dialogBuilder.addEnqueueEntriesIfNeeded();
-
         dialogBuilder.addEntriesForStreamType(item.getStreamType());
         dialogBuilder.addEntry(StreamDialogDefaultEntry.OPEN_IN_BROWSER);
-        if (KoreUtils.shouldShowPlayWithKodi(context, item.getServiceId())) {
-            dialogBuilder.addEntry(StreamDialogDefaultEntry.PLAY_WITH_KODI);
-        }
-
+        dialogBuilder.addPlayWithKodiEntryIfNeeded();
         dialogBuilder.addMarkAsWatchedEntryIfNeeded(item.getStreamType());
         if (!isNullOrEmpty(item.getUploaderUrl())) {
             dialogBuilder.addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS);
